@@ -1,0 +1,11 @@
+#!/bin/sh
+
+RACINE_FLEX="/home/mylinuxaccount/program/flex_sdk_4.6"
+BINAIRE_JAVA6="/usr/lib/java/bin/java"
+MAKE="$BINAIRE_JAVA6 -jar $RACINE_FLEX/lib/mxmlc.jar +flexlib=$RACINE_FLEX/frameworks webcam.as"
+
+echo "Executing:"
+echo $MAKE
+echo " "
+echo `$MAKE`
+

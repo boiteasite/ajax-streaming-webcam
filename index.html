@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Ajax Streaming Webcam</title>
+</head>
+<body>
+<table><tr style="vertical-align:top;">
+	<td>
+		WebCam :<div id="camera" style="width:320px;height:240px;border:3px solid brown;"></div>My Passwore (if camera)<br /><input type="text" name="moi" id="moi" />
+	</td>
+	<td>
+		<a href="javascript:moi=document.getElementById('moi').value;document.getElementById('moi').disabled=true;stream_on();webcam.capture();void(0);">ON</a>
+		<br />
+		<a href="javascript:webcam.turnOff();document.getElementById('moi').disabled=false;webcam();void(0);">OFF</a>
+	</td>
+	<td>
+		Direct Stream (Canvas) :<div style="width:320px;height:240px;border:3px solid yellow;"><canvas id='canvas' width='320' height='240'></canvas></div>
+	</td>
+	<td>
+		Stream Back (image) :<div style="width:320px;height:240px;border:3px solid pink;" id="bloc"><img id="stream" src="" /></div>User Password<br /><input type="texte" name="toi" id="toi" />
+	</td>
+</tr></table>
+<script>
+var moi='',img='',data,canvas=document.getElementById('canvas'),pos=0,ctx=null,image=[],b=1,n=document.getElementById('stream');
+var options={
+	width:320,
+	height:240,
+	swffile:"webcam.swf",
+	wrapper:"webcam",
+	jpgQuality:60,
+	jpgEncode:0,
+	refresh:200 // refresh (ms)
+};
+//
+function webcam(){
+	var source='<object id="camObj" type="application/x-shockwave-flash" data="'+options.swffile+'" width="'+options.width+'" height="'+options.height+'"><param name="movie" value="'+options.swffile+'" /><param name="FlashVars" value="width='+options.width+'&amp;height='+options.height+'&amp;jpgEncode='+options.jpgEncode+'&amp;jpgQuality='+options.jpgQuality+'&amp;refresh='+Math.floor(options.refresh*.9)+'&amp;wrapper='+options.wrapper+'" /><param name="allowScriptAccess" value="always" /></object>';
+	document.getElementById('camera').innerHTML=source;
+	if (canvas.toDataURL){
+		ctx=canvas.getContext("2d");
+		image=ctx.getImageData(0,0,options.width,options.height);
+	}
+	var run = 3;
+	(_register=function() {
+		var cam=document.getElementById('camObj');
+		if(cam&&cam.capture!==undefined){
+			webcam.capture=function(x){return cam.capture(x);}
+			webcam.turnOff=function(){return cam.turnOff();}		
+			webcam.onSave=saveData;
+			webcam.camOk=function(){/*cam ready*/}
+		}
+		else if(run==0) return;
+		else{run--;window.setTimeout(_register, 1000*(4-run));}
+	})();
+}
+function saveData(data){
+	if(options.jpgEncode==0) {
+		var col=data.split(";");
+		var img=image;
+		for (i=0;i<options.width;i++){tmp=parseInt(col[i]);img.data[pos+0]=(tmp>>16)&0xff;img.data[pos+1]=(tmp>>8)&0xff;img.data[pos+2]=tmp&0xff;img.data[pos+3]=0xff;pos+=4;}
+		if (pos>=4*options.width*options.height){
+			ctx.putImageData(img,0,0);
+			if(b==1) upload("id="+moi+"&image="+canvas.toDataURL("image/jpeg",(options.jpgQuality)/100));
+			pos=0;
+		}
+	} else if(b==1) upload("id="+moi+"&image="+data);
+}
+function upload(s){
+	b=0;
+	a=new XMLHttpRequest();
+	a.open("POST","upload.php",true);
+	a.setRequestHeader('Content-Type', "application/x-www-form-urlencoded; charset=UTF-8");
+	a.setRequestHeader("Content-length", s.length);
+	a.onreadystatechange=function(){if(a.readyState==4)b=1;}
+	a.send(s);
+}
+function loadimg(f){
+	aa=new XMLHttpRequest();
+	aa.open("GET","upload.php?id="+f,true);
+	aa.onreadystatechange=function(){if(aa.readyState==4){img=aa.responseText;}}
+	aa.send();
+}
+function stream_cam(){toi=document.getElementById('toi').value;
+	n.src='webcam/web'+toi+'.jpg?'+new Date().getTime();
+}
+function stream_on(){vue=setInterval('stream_cam();',options.refresh);}
+//
+window.onload=function(){webcam();};
+</script>
+
+</body>
+</html>
