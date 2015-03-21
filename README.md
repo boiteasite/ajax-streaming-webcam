@@ -23,7 +23,9 @@ Only with 3 files :
 * HTML,
 * PHP.
 
-Flash Source code in AS3. 
+Flash Source code in AS3.
+
+More details in French [here](http://www.boiteasite.fr/fiches/javascript_webcam_streaming.html).
 
 License 
 -------
