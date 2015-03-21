@@ -6,7 +6,7 @@ A simple Javascript project to stream a webcam on the web.
 Presentation
 ------------
 
-A very Easy to use plugin to stream a video with password on the web.
+A very easy to use plugin to stream a video with password on the web.
 This plugin transform a webcam video in jpg file and send it regularly with Ajax to the host.
 Optimized for small config and low bandwidth.
 
@@ -17,7 +17,7 @@ Different modes :
 * Classical callback in IMG container ;
 * Ajax callback in base64 JPG in a DIV Container to avoid caching. 
 
-Only with 3 files :
+Only 3 files :
 
 * SWF,
 * HTML,
